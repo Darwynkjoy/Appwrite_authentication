@@ -74,6 +74,9 @@ class _signupState extends State<SignupPage>{
                   }catch(e){
                     print("error adding user: $e");
                   }
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill in all feilds"))
+                  );
                 }
               }, child: Text("SignUp",style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
               ),
