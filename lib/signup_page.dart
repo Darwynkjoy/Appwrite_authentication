@@ -1,3 +1,4 @@
+import 'package:appwrite_authentication/appwrite_service.dart';
 import 'package:appwrite_authentication/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,12 @@ class SignupPage extends StatefulWidget{
   State<SignupPage> createState()=> _signupState();
 }
 class _signupState extends State<SignupPage>{
+  late AppwriteService _appwriteService;
+
+  void initState(){
+    super.initState();
+    _appwriteService = AppwriteService();
+  }
 
   TextEditingController nameContoller=TextEditingController();
   TextEditingController emailController=TextEditingController();
@@ -56,8 +63,18 @@ class _signupState extends State<SignupPage>{
                 backgroundColor: Colors.lightBlueAccent,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
               ),
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+              onPressed: ()async{
+                if(nameContoller.text.isNotEmpty && emailController.text.isNotEmpty && PasswordController.text.isNotEmpty){
+                  try{
+                    await _appwriteService.registerUser(emailController.text,PasswordController.text, nameContoller.text);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+                    nameContoller.clear();
+                    emailController.clear();
+                    PasswordController.clear();
+                  }catch(e){
+                    print("error adding user: $e");
+                  }
+                }
               }, child: Text("SignUp",style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
               ),
               SizedBox(height: 50,),

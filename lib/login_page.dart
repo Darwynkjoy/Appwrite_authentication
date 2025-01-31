@@ -1,3 +1,4 @@
+import 'package:appwrite_authentication/appwrite_service.dart';
 import 'package:appwrite_authentication/homescreen.dart';
 import 'package:appwrite_authentication/signup_page.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,14 @@ class LoginPage extends StatefulWidget{
   State<LoginPage> createState()=> _loginState();
 }
 class _loginState extends State<LoginPage>{
+
+  late AppwriteService _appwriteService;
+
+  void initState(){
+    super.initState();
+    _appwriteService = AppwriteService();
+  }
+
 
   TextEditingController emailController=TextEditingController();
   TextEditingController PasswordController=TextEditingController();
@@ -47,8 +56,23 @@ class _loginState extends State<LoginPage>{
                 backgroundColor: Colors.lightBlueAccent,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
               ),
-              onPressed: (){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Homescreen()));
+              onPressed: ()async{
+                if(emailController.text.isNotEmpty && PasswordController.text.isNotEmpty){
+                  try{
+                    await _appwriteService.loginUser(emailController.text, PasswordController.text);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Homescreen())
+                    );
+                    emailController.clear();
+                    PasswordController.clear();
+                  }catch(e){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString()),)
+                    );
+                  }
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("please fill in all the feilds "))
+                  );
+                }
               }, child: Text("Login",style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
               ),
               SizedBox(height: 50,),
