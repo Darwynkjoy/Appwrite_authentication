@@ -64,7 +64,9 @@ class _signupState extends State<SignupPage>{
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
               ),
               onPressed: ()async{
-                if(nameContoller.text.isNotEmpty && emailController.text.isNotEmpty && PasswordController.text.isNotEmpty){
+                if(nameContoller.text.isNotEmpty  
+                && emailController.text.isNotEmpty && RegExp(r'\S+@\S+\.\S+').hasMatch(emailController.text)
+                && PasswordController.text.isNotEmpty /*&& RegExp(r'^[a-zA-z0-9]+$').hasMatch(PasswordController.text)*/){
                   try{
                     await _appwriteService.registerUser(emailController.text,PasswordController.text, nameContoller.text);
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
@@ -74,8 +76,16 @@ class _signupState extends State<SignupPage>{
                   }catch(e){
                     print("error adding user: $e");
                   }
-                }else{
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill in all feilds"))
+                }else if(emailController.text.isNotEmpty && emailController.text != RegExp(r'\S+@\S+\.\S+').hasMatch(emailController.text)){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content: Text("invalid email or password"))
+                  );
+                }
+                else if(nameContoller.text.isEmpty || emailController.text.isEmpty || PasswordController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content: Text("Please fill in all feilds"))
                   );
                 }
               }, child: Text("SignUp",style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
